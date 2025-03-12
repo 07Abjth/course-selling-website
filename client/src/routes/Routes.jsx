@@ -11,6 +11,7 @@ import { About } from "../pages/user/About";
 import { Cart } from "../pages/user/Cart";
 import { ErrorPage } from "../pages/shared/ErrorPage";
 import React from "react";
+import { CreateCoursePage } from "../pages/user/CreateCoursePage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "my-learnings", element: <MyLearnings /> },
       { path: "about", element: <About /> },
       { path: "cart", element: <Cart /> },
+      { path: "create-course-page", element: <CreateCoursePage/> },
     ],
   },
 ]);

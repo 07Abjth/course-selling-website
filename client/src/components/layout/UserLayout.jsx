@@ -19,10 +19,8 @@ export const UserLayout = () => {
       {isUserAuth ? <UserHeader /> : <Header />}
 
       {/* Main content */}
-      <div className="min-h-screen">
-        <Outlet />
-      </div>
-
+         <Outlet />
+ 
       {/* Footer */}
       <Footer />
     </div>

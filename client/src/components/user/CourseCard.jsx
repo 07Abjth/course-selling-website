@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const Card = ({ id, title, description, image, price }) => {
+export const CourseCard = ({ id, title, description, image, price }) => {
   return (
     <div className="bg-white p-6 rounded-md shadow-md hover:shadow-lg transition duration-300">
       <img src={image} alt={title} className="w-full h-40 object-cover rounded-md mb-4" />

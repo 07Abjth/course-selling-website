@@ -10,11 +10,14 @@ export const CourseDetailsPage = () => {
   const fetchCourseDetails = async () => {
     try {
       const response = await axiosInstance.get(`/courses/${id}`);
-      setCourse(response.data.course);
+      setCourse(response?.data?.course);
     } catch (error) {
       console.error("Error fetching course details:", error);
     }
   };
+
+console.log();
+
 
   useEffect(() => {
     fetchCourseDetails();
