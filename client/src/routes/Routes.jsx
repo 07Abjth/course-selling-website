@@ -12,6 +12,9 @@ import { Cart } from "../pages/user/Cart";
 import { ErrorPage } from "../pages/shared/ErrorPage";
 import React from "react";
 import { CreateCoursePage } from "../pages/user/CreateCoursePage";
+import { Wishlist } from "../pages/user/Wishlist";
+import { Profile } from "../pages/user/Profile";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -23,12 +26,26 @@ export const router = createBrowserRouter([
       { path: "signup", element: <SignUp /> },
       { path: "login", element: <Login /> },
       { path: "contact", element: <Contact /> },
+      { path: "about", element: <About /> },
       { path: "course-details-page/:id", element: <CourseDetailsPage /> },
       { path: "course-page", element: <CoursePage /> },
-      { path: "my-learnings", element: <MyLearnings /> },
-      { path: "about", element: <About /> },
-      { path: "cart", element: <Cart /> },
+     
+      
+      //Protected Routes
+      {
+        element: <ProtectedRoute />,
+        children: [
+      { path: "wishlist", element: <Wishlist /> },
       { path: "create-course-page", element: <CreateCoursePage/> },
+      { path: "profile", element: <Profile /> },
+      { path: "my-learnings", element: <MyLearnings /> },
+      { path: "cart", element: <Cart /> },
+      { path: "order", element:  <h1>order page</h1> },
+    ],
+       
+    },
+
     ],
   },
+
 ]);

@@ -1,17 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "../user/Header";
 import { UserHeader } from "../user/UserHeader";
 import { Footer } from "../user/Footer";
+import { axiosInstance } from "../../config/axiosInstance";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUserData, saveUserData } from "../../redux/features/userSlice";
 
 export const UserLayout = () => {
-  const [isUserAuth, setIsUserAuth] = useState(false);
+  // ✅ Correct use of useSelector
+  const { isUserAuth, userData } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
-  // Check login state when component loads
+  console.log(location.pathname, "====pathName");
+  
+
+  // ✅ Async function to check user authentication
+  const checkUser = async () => {
+    try {
+      const response = await axiosInstance.get("/user/check-user");
+      dispatch(saveUserData(response.data));
+      console.log(response, "========== checkUser response");
+    } catch (error) {
+      dispatch(clearUserData());
+      console.log(error, "=========== checkUser error");
+    }
+  };
+
+  // ✅ Use useEffect correctly
   useEffect(() => {
-    const user = localStorage.getItem("userToken"); // Assuming you store token in localStorage
-    setIsUserAuth(!!user); // Convert to boolean (true if user exists)
-  }, []);
+    checkUser();
+  }, [location.pathname]);
+
+  console.log(isUserAuth, "isUserAuth");
+  console.log(userData, "userData");
 
   return (
     <div>
@@ -19,8 +42,10 @@ export const UserLayout = () => {
       {isUserAuth ? <UserHeader /> : <Header />}
 
       {/* Main content */}
-         <Outlet />
- 
+      <div>
+        <Outlet />
+      </div>
+
       {/* Footer */}
       <Footer />
     </div>

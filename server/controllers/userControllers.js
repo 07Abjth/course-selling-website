@@ -166,3 +166,8 @@ export const getUserProfile = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const checkUser = async (req,res)=>{
+
+
+}
