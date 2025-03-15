@@ -23,6 +23,7 @@ export const Profile = () => {
           <p><strong>Name:</strong> {profile.name}</p>
           <p><strong>Email:</strong> {profile.email}</p>
           <p><strong>Phone:</strong> {profile.phoneNumber || "Not provided"}</p>
+          <img src={profile.profilePic} alt="Profile" className="w-24 h-24 rounded-full mt-4" />
         </div>
       ) : (
         <p>No profile data found.</p>

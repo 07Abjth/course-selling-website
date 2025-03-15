@@ -1,12 +1,15 @@
 import User from '../models/userModel.js';  
 import bcrypt from 'bcrypt';   
 import generateToken from '../utils/generateToken.js';  
-import mongoose from "mongoose";
+
+
 
 // Register a new user
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, phoneNumber, password, confirmPassword } = req.body;
+    console.log("🔍 Received Data:", req.body); // ✅ Debugging Line
+
+    const { name, email, phoneNumber, password, confirmPassword, profilePic } = req.body;
 
     if (!name || !email || !phoneNumber || !password || !confirmPassword) {
       return res.status(400).json({ success: false, message: "All fields are required" });
@@ -23,7 +26,14 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ name, email, password: hashedPassword, phoneNumber });
+    const user = new User({
+      name,
+      email,
+      phoneNumber, // ✅ Ensure phoneNumber is stored
+      password: hashedPassword,
+      profilePic: profilePic || "https://www.example.com/default-profile.png",
+    });
+
     await user.save();
 
     if (user) {
@@ -42,6 +52,8 @@ export const registerUser = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
+          phoneNumber: user.phoneNumber,
+          profilePic: user.profilePic,
         },
         token,
       });
@@ -52,6 +64,8 @@ export const registerUser = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
 
 // Login a user
 export const loginUser = async (req, res) => {
@@ -110,7 +124,7 @@ export const logoutUser = (req, res) => {
   }
 };
 
-// Get user profile
+ // Get user profile
 export const getUserProfile = async (req, res) => {
   try {
     console.log("Decoded Token User ID:", req.user.id);
@@ -119,16 +133,23 @@ export const getUserProfile = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized, please log in" });
     }
 
+    // ✅ Fetch user details excluding password
     const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found in database" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     return res.status(200).json({
       success: true,
       message: "User profile fetched successfully",
-      data: user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber || "Not provided", // ✅ Ensure phoneNumber is included
+        profilePic: user.profilePic, // ✅ Ensure profile picture is included
+      },
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -136,8 +157,10 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+
+
 // Check user
-export const checkUser = async (req, res) => {
+ export const checkUser = async (req, res) => {
   try {
     const { email, id } = req.query;
     if (!req.user) {
@@ -147,7 +170,7 @@ export const checkUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-    return res.status(200).json({ success: true, data: user });
+    return res.status(200).json({ success: true, data: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

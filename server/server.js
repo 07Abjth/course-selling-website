@@ -1,10 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
- import {dbConnect} from "./config/dbConfig.js";
+import { dbConnect } from "./config/dbConfig.js";
 import v1Router from "./routes/v1/index.js";
-import cookieParser from "cookie-parser"; // ✅ Required to read cookies
-
+import cookieParser from "cookie-parser";
 
 // Load environment variables
 dotenv.config();
@@ -12,34 +11,32 @@ dotenv.config();
 // Initialize express app
 const app = express();
 
-// Middleware
+// ✅ Middleware
 app.use(express.json()); // Parses incoming JSON requests
+app.use(cookieParser()); // ✅ Enables cookie parsing
+
+// ✅ CORS Configuration
 app.use(cors({
-  origin: "http://localhost:5173", // Allow only this origin
-  methods: ["GET,HEAD,PUT,PATCH,POST,DELETE"],
+  origin: "http://localhost:5173",
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"], // ✅ Fix methods format
   credentials: true,
+}));
 
-}));  
-
-app.use(cookieParser()); // ✅ Enable cookie parsing
-
-
-
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 dbConnect();
 
-// API Versioning
-app.use("/api/v1", v1Router)
+// ✅ API Versioning
+app.use("/api/v1", v1Router);
 
-// Sample route
+// ✅ Sample Route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Define PORT
+// ✅ Define PORT
 const PORT = process.env.PORT || 6000;
 
-// Start server
+// ✅ Start Server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
