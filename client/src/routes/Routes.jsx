@@ -34,6 +34,7 @@ export const router = createBrowserRouter([
       //Protected Routes
       {
         element: <ProtectedRoute />,
+        path: "user",
         children: [
       { path: "wishlist", element: <Wishlist /> },
       { path: "create-course-page", element: <CreateCoursePage/> },

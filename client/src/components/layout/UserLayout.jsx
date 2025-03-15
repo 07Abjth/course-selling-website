@@ -19,7 +19,9 @@ export const UserLayout = () => {
   // ✅ Async function to check user authentication
   const checkUser = async () => {
     try {
-      const response = await axiosInstance.get("/user/check-user");
+      const response = await axiosInstance.get("/user/check-user/:id", {
+        withCredentials: true, // ✅ Ensure cookies are sent
+      });
       dispatch(saveUserData(response.data));
       console.log(response, "========== checkUser response");
     } catch (error) {
@@ -27,6 +29,7 @@ export const UserLayout = () => {
       console.log(error, "=========== checkUser error");
     }
   };
+  
 
   // ✅ Use useEffect correctly
   useEffect(() => {

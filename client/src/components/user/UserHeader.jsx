@@ -30,10 +30,10 @@ export const UserHeader = () => {
           <Link to="/dashboard" className="hover:text-blue-400 transition">
             Dashboard
           </Link>
-          <Link to="/my-learnings" className="hover:text-blue-400 transition">
+          <Link to="user/my-learnings" className="hover:text-blue-400 transition">
             My Learnings
           </Link>
-          <Link to="/profile" className="hover:text-blue-400 transition">
+          <Link to="user/profile" className="hover:text-blue-400 transition">
             Profile
           </Link>
         </nav>

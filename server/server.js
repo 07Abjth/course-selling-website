@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
  import {dbConnect} from "./config/dbConfig.js";
 import v1Router from "./routes/v1/index.js";
+import cookieParser from "cookie-parser"; // ✅ Required to read cookies
 
 
 // Load environment variables
@@ -19,6 +20,8 @@ app.use(cors({
   credentials: true,
 
 }));  
+
+app.use(cookieParser()); // ✅ Enable cookie parsing
 
 
 
