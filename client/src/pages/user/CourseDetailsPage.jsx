@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // ✅ Get course ID from URL
+
 import { axiosInstance } from "../../config/axiosInstance";
 
 export const CourseDetailsPage = () => {
@@ -17,7 +19,6 @@ export const CourseDetailsPage = () => {
   };
 
 console.log();
-
 
   useEffect(() => {
     fetchCourseDetails();

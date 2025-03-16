@@ -10,7 +10,7 @@ export const CourseCard = ({ id, title, description, image, price }) => {
       <p className="text-lg font-bold text-blue-500">₹{price}</p>
 
       {/* ✅ Clicking here will take the user to full course details */}
-      <Link to={`/course/${id}`} className="text-blue-500 underline mt-2 block">
+      <Link to={`/course-details-page/${id}`} className="text-blue-500 underline mt-2 block">
         More Details
       </Link>
 

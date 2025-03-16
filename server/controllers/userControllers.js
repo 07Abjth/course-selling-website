@@ -112,17 +112,19 @@ export const loginUser = async (req, res) => {
 // Logout a user
 export const logoutUser = (req, res) => {
   try {
-    res.cookie('token', '', {
+    res.cookie("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      expires: new Date(0)
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
     });
-    res.json({ success: true, message: "User logged out successfully" });
+
+    return res.json({ success: true, message: "User logged out successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
  // Get user profile
 export const getUserProfile = async (req, res) => {

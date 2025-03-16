@@ -57,8 +57,9 @@ export const createCourse = async (req, res) => {
 export const getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find();
+    console.log("Courses from DB:", courses); // ✅ Debugging: Ensure `_id` is included
 
-    if (!courses.length>0) {
+    if (!courses.length) {
       return res.status(404).json({ success: false, message: "No courses found" });
     }
 

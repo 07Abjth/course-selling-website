@@ -17,6 +17,8 @@ export const Login = ({ role ="user" }) => {
     role: "user",
     login_api: "/user/login",
     profile_route: "/user/profile",
+    home_route: "/",
+
     signup_route: "/signup",
   };
 
@@ -24,6 +26,7 @@ export const Login = ({ role ="user" }) => {
     user.role = "mentor";
     user.login_api = "/mentor/login";
     user.profile_route = "/mentor/profile";
+    user.home_route = "/mentor-home";  
     user.signup_route = "/mentor-signup";
   }
 
@@ -36,7 +39,7 @@ export const Login = ({ role ="user" }) => {
       const response = await axiosInstance.post(user.login_api, data); // ✅ Fix: Correct API call
       console.log(response, "====response");
       toast.success("Login successful");
-      navigate(user.profile_route);
+      navigate(user.home_route);
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Login failed");
