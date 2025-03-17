@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // ✅ Get course ID from URL
 
 import { axiosInstance } from "../../config/axiosInstance";
+import toast from "react-hot-toast";
 
 export const CourseDetailsPage = () => {
   const { id } = useParams(); // ✅ Extract course ID from URL
@@ -27,6 +28,29 @@ console.log();
   if (!course) {
     return <p className="text-center text-gray-500">Loading...</p>;
   }
+
+const handleAddToCart = async () => {
+try {
+
+
+
+  const response = await axiosInstance({
+    url:"/cart/add-to-cart",
+  data:{
+    courseId: courseDetails?.id
+  }, method:"POST"
+  })
+
+
+  console.log("Added course to cart:", response.data);
+  toast.success("Course added to cart successfully!");
+  
+} catch (error) {
+  console.log("Error adding course to cart:", error);
+  toast.error("Error adding course to cart. Please try again.");
+}
+
+}
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 p-6 md:p-10">
@@ -108,7 +132,7 @@ console.log();
           <button className="flex-1 px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
             Enroll Now
           </button>
-          <button className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-800 transition">
+          <button className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-800 transition" onClick={handleAddToCart}>
             Add to Cart
           </button>
         </div>
