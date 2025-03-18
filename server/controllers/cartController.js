@@ -4,9 +4,10 @@ import Course from "../models/courseModel.js";
   
 
 // ✅ Add course to cart
+// ✅ Add course to cart
 export const addCourseToCart = async (req, res) => {
   try {
-    const userId = req.user.id; // ✅ Ensure user ID is retrieved from auth middleware
+    const userId = req.user.id; // Get user ID from request
     const { courseId } = req.body;
 
     // ✅ Check if the course exists
@@ -20,6 +21,7 @@ export const addCourseToCart = async (req, res) => {
 
     if (!cart) {
       cart = new Cart({ user: userId, courses: [] });
+      await cart.save(); // Save the new cart immediately
     }
 
     // ✅ Check if course is already in the cart
@@ -28,8 +30,8 @@ export const addCourseToCart = async (req, res) => {
       return res.status(400).json({ success: false, message: "Course already in cart" });
     }
 
-    // ✅ Add the course to the cart with correct structure
-    cart.courses.push({ course: courseId });
+    // ✅ Add the course properly
+    cart.courses.push({ course: courseId, quantity: 1 }); // ✅ FIXED
     await cart.save();
 
     res.status(200).json({ success: true, message: "Course added to cart successfully", cart });
