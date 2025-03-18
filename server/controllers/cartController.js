@@ -1,10 +1,12 @@
 import Cart from "../models/cartModel.js";
 import Course from "../models/courseModel.js";
 
+  
+
 // ✅ Add course to cart
 export const addCourseToCart = async (req, res) => {
   try {
-    const userId = req.user.id; // Get user ID from request
+    const userId = req.user.id; // ✅ Ensure user ID is retrieved from auth middleware
     const { courseId } = req.body;
 
     // ✅ Check if the course exists
@@ -18,17 +20,16 @@ export const addCourseToCart = async (req, res) => {
 
     if (!cart) {
       cart = new Cart({ user: userId, courses: [] });
-      await cart.save(); // Save the new cart immediately
     }
 
     // ✅ Check if course is already in the cart
-    const courseExists = cart.courses.some(item => item.equals(courseId));
+    const courseExists = cart.courses.some((item) => item.course.equals(courseId));
     if (courseExists) {
       return res.status(400).json({ success: false, message: "Course already in cart" });
     }
 
-    // ✅ Add the course to the cart
-    cart.courses.push(courseId);
+    // ✅ Add the course to the cart with correct structure
+    cart.courses.push({ course: courseId });
     await cart.save();
 
     res.status(200).json({ success: true, message: "Course added to cart successfully", cart });
@@ -37,6 +38,7 @@ export const addCourseToCart = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // ✅ Remove course from cart
 export const removeCourseFromCart = async (req, res) => {
@@ -63,9 +65,9 @@ export const removeCourseFromCart = async (req, res) => {
 // ✅ Get user cart
 export const getCart = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user.id; // ✅ Get user ID from auth middleware
     const cart = await Cart.findOne({ user: userId }).populate({
-      path: "courses",
+      path: "courses.course", // ✅ Ensure correct population
       select: "title price image instructor",
     });
 
@@ -79,3 +81,4 @@ export const getCart = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+

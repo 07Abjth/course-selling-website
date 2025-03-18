@@ -36,22 +36,26 @@ export const CourseDetailsPage = () => {
         toast.error("You must be logged in to add items to the cart.");
         return;
       }
-
-      const response = await axiosInstance.post("/cart/add-to-cart", {
-        userId,  
-        courseId: course?._id, //   Send course ID properly
+  
+      // ✅ Log request data before sending
+      console.log("Sending data to cart API:", {
+        userId,
+        courseId: course._id,
       });
-
-      if (response.data.success) {
-        toast.success("Course added to cart successfully!");
-      } else {
-        toast.error(response.data.message || "Failed to add course to cart.");
-      }
+  
+      const response = await axiosInstance.post("/cart/add-to-cart", {
+        userId,
+        courseId: course._id,
+      });
+  
+      console.log("Added course to cart:", response.data);
+      toast.success("Course added to cart successfully!");
     } catch (error) {
       console.error("Error adding to cart:", error);
-      toast.error("Something went wrong: " + (error.response?.data?.message || error.message));
+      toast.error("Error adding course to cart. Please try again.");
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 p-6 md:p-10">
