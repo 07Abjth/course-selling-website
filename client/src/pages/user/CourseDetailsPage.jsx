@@ -1,25 +1,25 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // ✅ Get course ID from URL
-
+import { useSelector } from "react-redux"; // ✅ Import Redux selector
 import { axiosInstance } from "../../config/axiosInstance";
 import toast from "react-hot-toast";
 
 export const CourseDetailsPage = () => {
   const { id } = useParams(); // ✅ Extract course ID from URL
+  const { userData } = useSelector((state) => state.user); // ✅ Get user from Redux
+  const userId = userData?.data?.id; 
+
   const [course, setCourse] = useState(null);
 
-  // Fetch full course details
+  // ✅ Fetch course details
   const fetchCourseDetails = async () => {
     try {
-      const response = await axiosInstance.get(`/courses/${id}`);
+      const response = await axiosInstance.get(`/courses/get-course-details/${id}`);
       setCourse(response?.data?.course);
     } catch (error) {
       console.error("Error fetching course details:", error);
     }
   };
-
-console.log();
 
   useEffect(() => {
     fetchCourseDetails();
@@ -29,28 +29,29 @@ console.log();
     return <p className="text-center text-gray-500">Loading...</p>;
   }
 
-const handleAddToCart = async () => {
-try {
+  // ✅ Add course to cart function
+  const handleAddToCart = async () => {
+    try {
+      if (!userId) {
+        toast.error("You must be logged in to add items to the cart.");
+        return;
+      }
 
+      const response = await axiosInstance.post("/cart/add-to-cart", {
+        userId,  
+        courseId: course?._id, //   Send course ID properly
+      });
 
-
-  const response = await axiosInstance({
-    url:"/cart/add-to-cart",
-  data:{
-    courseId: courseDetails?.id
-  }, method:"POST"
-  })
-
-
-  console.log("Added course to cart:", response.data);
-  toast.success("Course added to cart successfully!");
-  
-} catch (error) {
-  console.log("Error adding course to cart:", error);
-  toast.error("Error adding course to cart. Please try again.");
-}
-
-}
+      if (response.data.success) {
+        toast.success("Course added to cart successfully!");
+      } else {
+        toast.error(response.data.message || "Failed to add course to cart.");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Something went wrong: " + (error.response?.data?.message || error.message));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 p-6 md:p-10">
@@ -98,7 +99,6 @@ try {
                         >
                           Watch Video
                         </a>
-                        {/* ✅ Display resources if available */}
                         {lecture.resources?.length > 0 && (
                           <ul className="list-disc ml-6 text-gray-500 text-sm">
                             {lecture.resources.map((res, j) => (
@@ -132,7 +132,10 @@ try {
           <button className="flex-1 px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
             Enroll Now
           </button>
-          <button className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-800 transition" onClick={handleAddToCart}>
+          <button
+            className="flex-1 px-6 py-3 bg-gray-700 text-white font-semibold rounded-md hover:bg-gray-800 transition"
+            onClick={handleAddToCart}
+          >
             Add to Cart
           </button>
         </div>

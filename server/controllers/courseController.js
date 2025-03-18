@@ -111,3 +111,16 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getCourseDetails = async (req, res) => {
+  console.log("Received ID:", req.params.id);
+  try {
+    const course = await Course.findById(req.params.id);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+    res.status(200).json({ success: true, course });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
