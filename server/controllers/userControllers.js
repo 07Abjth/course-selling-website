@@ -127,16 +127,17 @@ export const logoutUser = (req, res) => {
 
 
  // Get user profile
-export const getUserProfile = async (req, res) => {
+ export const getUserProfile = async (req, res) => {
   try {
-    console.log("Decoded Token User ID:", req.user.id);
+    const userId = req.params.id || req.user?.id; // Get from URL or Token
+    console.log("🔍 Fetching profile for User ID:", userId);
 
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ success: false, message: "Unauthorized, please log in" });
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required" });
     }
 
     // ✅ Fetch user details excluding password
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
@@ -145,20 +146,13 @@ export const getUserProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User profile fetched successfully",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber || "Not provided", // ✅ Ensure phoneNumber is included
-        profilePic: user.profilePic, // ✅ Ensure profile picture is included
-      },
+      user,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 
 // Check user
