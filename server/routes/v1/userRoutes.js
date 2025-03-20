@@ -12,7 +12,7 @@ router.post('/login', loginUser);
 router.get('/check-user/:id',authUser, checkUser)
 router.post('/logout', logoutUser);
 
-router.get('/profile/:id', authUser, getUserProfile);  
+router.get('/profile', authUser, getUserProfile);  
 
 
 export default router;
