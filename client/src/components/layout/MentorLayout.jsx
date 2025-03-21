@@ -1,14 +1,16 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { MentorHeader } from "../mentor/MentorHeader"; // ✅ Separate header for mentors
+import { MentorHeader } from "../mentor/MentorHeader";
 import { Footer } from "../user/Footer"; // ✅ Reuse the same footer
 import { axiosInstance } from "../../config/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUserData, saveUserData } from "../../redux/features/userSlice";
 import { Header } from "../user/Header";
+import { MentorFooter } from "../mentor/MentorFooter";
+import { SideBar } from "../mentor/SideBar";
 
 export const MentorLayout = () => {
-  const { isUserAuth, userData } = useSelector((state) => state.user);
+  const { isMentorAuth, userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const location = useLocation();
 
@@ -32,21 +34,27 @@ export const MentorLayout = () => {
     checkMentor();
   }, [location.pathname]);
 
-  console.log(isUserAuth, "isUserAuth");
+  console.log(isMentorAuth, "isMentorAuth");
   console.log(userData, "userData");
 
   return (
-    <div>
-      {/* Mentor Header */}
-      {isUserAuth ? <MentorHeader /> : <Header />}
-
-      {/* Main content */}
-      <div>
-        <Outlet />
+    <div className="flex flex-row">
+      <div className="w-2/12 shadow-lg">
+      <SideBar/>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      <div className="w-full">
+      <MentorHeader/>
+
+{/* Main content */}
+<div>
+  <Outlet />
+</div>
+
+{/* Footer */}
+<MentorFooter />
+      </div>
+
     </div>
   );
 };

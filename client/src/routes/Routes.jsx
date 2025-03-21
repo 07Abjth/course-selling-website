@@ -16,6 +16,7 @@ import { Wishlist } from "../pages/user/Wishlist";
 import { Profile } from "../pages/user/Profile";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MentorLayout } from "../components/layout/MentorLayout";
+ import {MentorHome} from "../pages/mentor/MentorHome";
 
 export const router = createBrowserRouter([
   {
@@ -50,18 +51,20 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "mentor",
+    path: "/mentor",
     element: <MentorLayout />,
-    errorElement: <ErrorPage />,
+    errorElement: <ErrorPage role= "mentor" />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <MentorHome/> },
       { path: "signup", element: <SignUp /> },
       { path: "login", element: <Login role="mentor" /> },
-      { path: "contact", element: <Contact /> },
-      { path: "about", element: <About /> },
-      { path: "course-details-page/:id", element: <CourseDetailsPage /> },
-      { path: "course-page", element: <CoursePage /> },
-     
+       { path: "course-details-page/:id", element: <CourseDetailsPage /> },
+      { path: "courses", element: <CoursePage /> },
+      { path: "create-course", element: <CreateCoursePage/> },
+      { path: "profile", element: <Profile /> },
+      { path: "track-progress", element: <Profile /> },
+      { path: "user-data", element: <Profile /> },
+
       
       //Protected Routes
       {

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { DarkMode } from "../shared/DarkMode";
 
 export const MentorHeader = () => {
   return (
@@ -12,8 +13,11 @@ export const MentorHeader = () => {
 
         {/* Navigation Links */}
         <nav className="space-x-6">
+        <Link to="/mentor/dashboard" className="hover:text-gray-200">
+            Dashboard
+          </Link>
           <Link to="/mentor/courses" className="hover:text-gray-200">
-            My Courses
+            Courses
           </Link>
           <Link to="/mentor/students" className="hover:text-gray-200">
             Students
@@ -22,7 +26,7 @@ export const MentorHeader = () => {
             Profile
           </Link>
         </nav>
-
+ <DarkMode/>
         {/* Logout Button */}
         <button className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition">
           Logout
