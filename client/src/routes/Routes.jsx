@@ -17,6 +17,7 @@ import { Profile } from "../pages/user/Profile";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MentorLayout } from "../components/layout/MentorLayout";
  import {MentorHome} from "../pages/mentor/MentorHome";
+import { ProtectedRoutesMentor } from "./ProtectedRoutesMentor";
 
 export const router = createBrowserRouter([
   {
@@ -59,24 +60,19 @@ export const router = createBrowserRouter([
       { path: "signup", element: <SignUp /> },
       { path: "login", element: <Login role="mentor" /> },
        { path: "course-details-page/:id", element: <CourseDetailsPage /> },
-      { path: "courses", element: <CoursePage /> },
-      { path: "create-course", element: <CreateCoursePage/> },
-      { path: "profile", element: <Profile /> },
-      { path: "track-progress", element: <Profile /> },
-      { path: "user-data", element: <Profile /> },
+     
 
       
       //Protected Routes
       {
-        element: <ProtectedRoute />,
+        element: <ProtectedRoutesMentor />,
         path: "mentor",
         children: [
-      { path: "wishlist", element: <Wishlist /> },
-      { path: "create-course-page", element: <CreateCoursePage/> },
-      { path: "profile", element: <Profile /> },
-      { path: "my-learnings", element: <MyLearnings /> },
-      { path: "cart", element: <Cart /> },
-      { path: "order", element:  <h1>order page</h1> },
+          { path: "courses", element: <CoursePage /> },
+          { path: "create-course", element: <CreateCoursePage/> },
+          { path: "profile", element: <Profile /> },
+          { path: "track-progress", element: <Profile /> },
+          { path: "user-data", element: <Profile /> },
     ],
        
     },

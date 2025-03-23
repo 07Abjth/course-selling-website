@@ -19,7 +19,7 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="mt-3 space-y-2 text-gray-400">
               <li><a href="/about" className="hover:text-white">About Us</a></li>
-              <li><a href="/courses" className="hover:text-white">Courses</a></li>
+              <li><a href="/mentor/login" className="hover:text-white">Login as a mentor</a></li>
               <li><a href="/contact" className="hover:text-white">Contact</a></li>
               <li><a href="/faq" className="hover:text-white">FAQ</a></li>
             </ul>

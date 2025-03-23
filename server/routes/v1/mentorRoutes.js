@@ -10,6 +10,8 @@ router.post('/register', registerMentor);
 // Route for mentor login
 router.post('/login', loginMentor);
 
+
+
 // Protect the route with mentorAuth middleware and connect it to the controller
 router.get('/mentor-dashboard', MentorAuth, getMentorDashboard);
 
