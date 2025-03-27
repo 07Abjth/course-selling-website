@@ -19,7 +19,7 @@ export const MentorAuth = (req, res, next) => {
     }
 
  // Check if the user has the 'mentor' or 'admin' role
- if (tokenDecoded.role !== 'mentor' && tokenDecoded.role !== 'admin') {
+ if (decoded.role !== 'mentor' && decoded.role !== 'admin') {
     return res.status(403).json({ success: false, message: 'Access denied, only mentors and admins can proceed' });
   }
 
