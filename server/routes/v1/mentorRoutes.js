@@ -1,18 +1,23 @@
- import express from 'express';
-import { registerMentor, loginMentor, getMentorDashboard } from '../../controllers/mentorControllers.js';
-import { MentorAuth } from '../../middlewares/mentorAuth.js';
+import express from "express";
+ 
+import { mentorAuth } from "../middleware/authMiddleware.js"; // ✅ Auth middleware
+import { getMentorDashboard, getMentorProfile, loginMentor, logoutMentor, registerMentor } from "../../controllers/mentorControllers.js";
 
 const router = express.Router();
 
-// Route to register a new mentor
-router.post('/register', registerMentor);
+// ✅ Register a new mentor
+router.post("/register", registerMentor);
 
-// Route for mentor login
-router.post('/login', loginMentor);
+// ✅ Login mentor
+router.post("/login", loginMentor);
 
+// ✅ Logout mentor
+router.post("/logout", logoutMentor);
 
+// ✅ Get mentor profile (Protected Route)
+router.get("/profile", mentorAuth, getMentorProfile);
 
-// Protect the route with mentorAuth middleware and connect it to the controller
-router.get('/mentor-dashboard', MentorAuth, getMentorDashboard);
+// ✅ Get mentor dashboard (Protected Route)
+router.get("/dashboard", mentorAuth, getMentorDashboard);
 
 export default router;

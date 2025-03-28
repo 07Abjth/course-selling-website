@@ -1,60 +1,58 @@
 // controllers/mentorController.js
 import Mentor from '../models/mentorModel.js';
- import bcrypt from 'bcrypt';   
-import generateToken from '../utils/generateToken.js';  
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'; // ✅ Ensure JWT is imported
+import generateToken from '../utils/generateToken.js';
 
-
-// Register a new user
+// ✅ Register a new mentor
 export const registerMentor = async (req, res) => {
   try {
     const { name, email, phoneNumber, password, confirmPassword } = req.body;
 
-    // Check if all required fields are provided
+    // ✅ Validate required fields
     if (!name || !email || !phoneNumber || !password || !confirmPassword) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    // Check if passwords match
+    // ✅ Check if passwords match
     if (password !== confirmPassword) {
       return res.status(400).json({ success: false, message: "Passwords do not match" });
     }
 
-    // Check if the user already exists
-    const userExists = await Mentor.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ success: false, message: 'Mentor already exists' });
+    // ✅ Check if the mentor already exists
+    const mentorExists = await Mentor.findOne({ email });
+    if (mentorExists) {
+      return res.status(400).json({ success: false, message: "Mentor already exists" });
     }
 
-    // Hash the password
+    // ✅ Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-console.log("password====>",password);
-console.log("hashedPassword====>",hashedPassword);
+    console.log("password====>", password);
+    console.log("hashedPassword====>", hashedPassword);
 
+    // ✅ Create a new mentor
+    const mentor = new Mentor({ name, email, password: hashedPassword, phoneNumber });
+    await mentor.save();
 
+    // ✅ Generate token for authentication
+    if (mentor) {
+      const token = generateToken(mentor, "mentor");
 
-    // Create a new user
-    const user = new Mentor({ name, email, password: hashedPassword, phoneNumber });
-    await user.save();
-
-    // If user creation is successful, generate a JWT token
-    if (user) {
-      const token = generateToken(user, "mentor");
-
-      // Send the token as a cookie
+      // ✅ Send token as a cookie
       res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Only use secure cookies in production
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
       });
 
       return res.status(201).json({
         success: true,
-        message: "Mentor created successfully",
-        _id: user._id,
-        name: user.name,
-        email: user.email,
+        message: "Mentor registered successfully",
+        _id: mentor._id,
+        name: mentor.name,
+        email: mentor.email,
         token,
       });
     } else {
@@ -65,46 +63,44 @@ console.log("hashedPassword====>",hashedPassword);
   }
 };
 
-
-
-// Login a user
+// ✅ Login a mentor (Fixed `User` -> `Mentor`)
 export const loginMentor = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if email and password are provided
+    // ✅ Validate email and password
     if (!email || !password) {
       return res.status(400).json({ success: false, message: "Email and password are required" });
     }
 
-    // Find the user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    // ✅ Find the mentor by email (Fixed the model from `User` to `Mentor`)
+    const mentor = await Mentor.findOne({ email });
+    if (!mentor) {
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
-    // Compare the provided password with the stored hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
+    // ✅ Compare password with hashed password
+    const isMatch = await bcrypt.compare(password, mentor.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
-    // If login is successful, generate a JWT token
-    const token = generateToken(user, "mentor");
+    // ✅ Generate token upon successful login
+    const token = generateToken(mentor, "mentor");
 
-    // Send the token as a cookie
+    // ✅ Send token as a cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Only use secure cookies in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      _id: user._id,
-      name: user.name,
-      email: user.email,
+      _id: mentor._id,
+      name: mentor.name,
+      email: mentor.email,
       token,
     });
   } catch (error) {
@@ -112,17 +108,15 @@ export const loginMentor = async (req, res) => {
   }
 };
 
-
-// Logout mentor
+// ✅ Logout mentor
 export const logoutMentor = async (req, res) => {
   try {
-   // Clear the token cookie when logging out
-res.clearCookie("token", {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
-});
-
+    // ✅ Clear the token cookie when logging out
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
     return res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
@@ -130,38 +124,35 @@ res.clearCookie("token", {
   }
 };
 
-
-
-// Get user profile (Authenticated)
+// ✅ Get Mentor Profile (Authenticated)
 export const getMentorProfile = async (req, res) => {
   try {
     const token = req.cookies.token;
 
-    // If no token is found, return an error
+    // ✅ If no token, return error
     if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized, please log in' });
+      return res.status(401).json({ success: false, message: "Unauthorized, please log in" });
     }
 
-    // Verify the token
+    // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Find the user by the decoded user ID
-    const user = await Mentor.findById(decoded.id);
+    // ✅ Find the mentor by decoded ID
+    const mentor = await Mentor.findById(decoded.id);
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'Mentor not found' });
+    if (!mentor) {
+      return res.status(404).json({ success: false, message: "Mentor not found" });
     }
 
-    // Return the user's profile information
+    // ✅ Return mentor profile data
     return res.status(200).json({
       success: true,
-      message: 'Mentor profile fetched successfully',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        // You can add more fields like address, avatar, etc. based on your model
+      message: "Mentor profile fetched successfully",
+      mentor: {
+        _id: mentor._id,
+        name: mentor.name,
+        email: mentor.email,
+        phoneNumber: mentor.phoneNumber,
       },
     });
   } catch (error) {
@@ -169,23 +160,19 @@ export const getMentorProfile = async (req, res) => {
   }
 };
 
-
-
-// Controller function for handling mentor dashboard
+// ✅ Get Mentor Dashboard
 export const getMentorDashboard = async (req, res) => {
   try {
-    // Access the user data attached to the request by the mentorAuth middleware
-    const user = req.user;
+    // ✅ Access mentor data attached by middleware
+    const mentor = req.user;
 
-    // Send a response with mentor data (you can add more data as needed)
     return res.json({
       success: true,
-      message: 'Welcome to the mentor dashboard!',
-      user: {
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        // You can add more details about the mentor as needed
+      message: "Welcome to the mentor dashboard!",
+      mentor: {
+        name: mentor.name,
+        email: mentor.email,
+        phoneNumber: mentor.phoneNumber,
       },
     });
   } catch (error) {
