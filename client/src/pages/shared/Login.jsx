@@ -21,7 +21,7 @@ export const Login = ({ role ="user" }) => {
 
     signup_route: "/signup",
   };
-
+      
   if (role === "mentor") {
     user.role = "mentor";
     user.login_api = "/mentor/login";
