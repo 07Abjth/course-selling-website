@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-export const MentorAuth = (req, res, next) => {
+export const mentorAuth = (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   
   // Log the token for debugging

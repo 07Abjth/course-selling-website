@@ -73,14 +73,20 @@ export const loginMentor = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email and password are required" });
     }
 
-    // ✅ Find the mentor by email (Fixed the model from `User` to `Mentor`)
-    const mentor = await Mentor.findOne({ email });
+    // ✅ Find the mentor by email
+    const mentor = await Mentor.findOne({ role: "mentor", email });
+    console.log("Mentor found:", mentor); // ✅ Debugging
     if (!mentor) {
+      console.log("Mentor not found for email:", email);
       return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
+    console.log("Mentor found:", mentor); // ✅ Debugging
+
     // ✅ Compare password with hashed password
     const isMatch = await bcrypt.compare(password, mentor.password);
+    console.log("Password match result:", isMatch); // ✅ Debugging
+
     if (!isMatch) {
       return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
@@ -104,9 +110,11 @@ export const loginMentor = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("Login error:", error); // ✅ Debugging
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // ✅ Logout mentor
 export const logoutMentor = async (req, res) => {
@@ -177,5 +185,16 @@ export const getMentorDashboard = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const checkMentor = async () => {
+  try {
+    const response = await axiosInstance.get("/mentor/check-mentor", {
+      withCredentials: true, // ✅ Ensures cookies are sent
+    });
+    dispatch(saveMentorData(response.data)); // ✅ Save mentor data if authenticated
+  } catch (error) {
+    dispatch(clearMentorData()); // ❌ Clear mentor data if not authenticated
   }
 };

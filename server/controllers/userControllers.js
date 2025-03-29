@@ -1,15 +1,13 @@
-import User from '../models/userModel.js';  
-import bcrypt from 'bcrypt';   
-import generateToken from '../utils/generateToken.js';  
+import User from "../models/userModel.js";
+import bcrypt from "bcrypt";
+import generateToken from "../utils/generateToken.js";
 
-
-
-// Register a new user
+// ✅ Register User OR Mentor OR Admin
 export const registerUser = async (req, res) => {
   try {
-    console.log("🔍 Received Data:", req.body); // ✅ Debugging Line
+    console.log("🔍 Received Data:", req.body);
 
-    const { name, email, phoneNumber, password, confirmPassword, profilePic } = req.body;
+    const { name, email, phoneNumber, password, confirmPassword, profilePic, role } = req.body;
 
     if (!name || !email || !phoneNumber || !password || !confirmPassword) {
       return res.status(400).json({ success: false, message: "All fields are required" });
@@ -29,45 +27,43 @@ export const registerUser = async (req, res) => {
     const user = new User({
       name,
       email,
-      phoneNumber, // ✅ Ensure phoneNumber is stored
+      phoneNumber,
       password: hashedPassword,
       profilePic: profilePic || "https://www.example.com/default-profile.png",
+      role: role === "mentor" ? "mentor" : role === "admin" ? "admin" : "user", 
+      isApproved: role === "mentor" ? false : true, // Mentors need admin approval
     });
 
     await user.save();
 
-    if (user) {
-      const token = generateToken(user, "user");
+    const token = generateToken(user, user.role);
 
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
-      return res.status(201).json({
-        success: true,
-        message: "User created successfully",
-        data: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          profilePic: user.profilePic,
-        },
-        token,
-      });
-    } else {
-      return res.status(400).json({ success: false, message: "Invalid user data" });
-    }
+    return res.status(201).json({
+      success: true,
+      message: `${user.role} registered successfully`,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        profilePic: user.profilePic,
+        role: user.role,
+        isApproved: user.isApproved,
+      },
+      token,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
-// Login a user
+// ✅ Login User OR Mentor OR Admin
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -86,7 +82,7 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
-    const token = generateToken(user, "user");
+    const token = generateToken(user, user.role);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -101,6 +97,8 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
+        isApproved: user.isApproved,
       },
       token,
     });
@@ -109,64 +107,73 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// Logout a user
-export const logoutUser = (req, res) => {
-  try {
-    res.cookie("token", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      expires: new Date(0),
-    });
+// ✅ Logout User
+export const logoutUser = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
 
-    return res.json({ success: true, message: "User logged out successfully" });
+  return res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
+// ✅ Check User Authentication
+export const checkUser = async (req, res) => {
+  return res.status(200).json({ success: true, user: req.user });
+};
+
+// ✅ Get Profile (User OR Mentor OR Admin)
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    return res.status(200).json({ success: true, user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
- // Get user profile
- export const getUserProfile = async (req, res) => {
+// ✅ Approve Mentor (Admin Only)
+export const approveMentor = async (req, res) => {
   try {
-    const userId = req.params.id || req.user?.id; // Get from URL or Token
-    console.log("🔍 Fetching profile for User ID:", userId);
-
-    if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID is required" });
+    const mentor = await User.findById(req.params.mentorId);
+    if (!mentor || mentor.role !== "mentor") {
+      return res.status(404).json({ success: false, message: "Mentor not found" });
     }
 
-    // ✅ Fetch user details excluding password
-    const user = await User.findById(userId).select("-password");
+    mentor.isApproved = true;
+    await mentor.save();
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "User profile fetched successfully",
-      user,
-    });
+    return res.status(200).json({ success: true, message: "Mentor approved successfully!" });
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-// Check user
- export const checkUser = async (req, res) => {
+// ✅ Get All Users (Admin Only)
+export const getAllUsers = async (req, res) => {
   try {
-    const { email, id } = req.query;
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "User not authenticated" });
-    }
-    let user = email ? await User.findOne({ email }) : id ? await User.findById(id) : await User.findById(req.user.id);
+    const users = await User.find().select("-password");
+    return res.status(200).json({ success: true, users });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ✅ Delete User (Admin Only)
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-    return res.status(200).json({ success: true, data: { id: user._id, name: user.name, email: user.email, role: user.role } });
+
+    await user.deleteOne();
+    return res.status(200).json({ success: true, message: "User deleted successfully!" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
