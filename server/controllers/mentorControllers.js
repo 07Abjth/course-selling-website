@@ -188,13 +188,32 @@ export const getMentorDashboard = async (req, res) => {
   }
 };
 
-export const checkMentor = async () => {
+// Check mentor
+export const checkMentor = async (req, res) => {
   try {
-    const response = await axiosInstance.get("/mentor/check-mentor", {
-      withCredentials: true, // ✅ Ensures cookies are sent
-    });
-    dispatch(saveMentorData(response.data)); // ✅ Save mentor data if authenticated
+    const { email, id } = req.query;
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Mentor not authenticated" });
+    }
+    let user = email ? await Mentor.findOne({ email }) : id ? await   Mentor.findById(id) : await Mentor.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Mentor not found" });
+    }
+    return res.status(200).json({ success: true, data: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
-    dispatch(clearMentorData()); // ❌ Clear mentor data if not authenticated
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+export const getMentor = async (req, res) => {
+  try {
+    const mentor = await User.findById(req.params.id);
+    if (!User) {
+      return res.status(404).json({ success: false, message: "Mentor not found" });
+    }
+    return res.status(200).json({ success: true, mentor });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+}

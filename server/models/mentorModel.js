@@ -17,7 +17,7 @@ const mentorSchema = new mongoose.Schema({
   },
   expertise: {
     type: String,
-    required: true,
+    required: false,
   },
   role: {
     type: String,

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 const generateToken = (user, role) => {
   try {
     const token = jwt.sign(
-      { id: user._id, role: role },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" } // ✅ Token expires in 7 days
     ); 

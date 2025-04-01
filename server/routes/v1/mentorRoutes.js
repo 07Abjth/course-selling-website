@@ -1,29 +1,28 @@
 import express from "express";
- 
- import { checkMentor, getMentorDashboard,   getMentorProfile, loginMentor, logoutMentor, registerMentor } from "../../controllers/mentorControllers.js";
-
-
-import {mentorAuth} from "../../middlewares/mentorAuth.js";
-
+import {
+  checkMentor,
+  getMentor,
+  getMentorDashboard,
+  getMentorProfile,
+  loginMentor,
+  logoutMentor,
+  registerMentor,
+} from "../../controllers/mentorControllers.js";
+import { protectAndAuthorize } from "../../middlewares/authUtils.js";
+import { mentorAuth } from "../../middlewares/mentorAuth.js";
 
 const router = express.Router();
 
-// ✅ Register a new mentor
+// ✅ Public Routes
 router.post("/register", registerMentor);
-
-router.post("/check-mentor", checkMentor);
-
-
-// ✅ Login mentor
 router.post("/login", loginMentor);
-
-// ✅ Logout mentor
 router.post("/logout", logoutMentor);
 
-// ✅ Get mentor profile (Protected Route)
-router.get("/profile", mentorAuth, getMentorProfile);
 
-// ✅ Get mentor dashboard (Protected Route)
-router.get("/dashboard", mentorAuth, getMentorDashboard);
+
+router.post("/check-mentor",mentorAuth, checkMentor);
+router.get("/get-mentor", getMentor);
+router.get("/profile", getMentorProfile);
+router.get("/dashboard", getMentorDashboard);
 
 export default router;

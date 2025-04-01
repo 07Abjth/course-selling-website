@@ -4,7 +4,9 @@ import User from "../models/userModel.js";
 // ✅ Protect Routes (Check if User is Logged In)
 export const protect = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    console.log("🔍 Checking authentication...");
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
+
     if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized, no token" });
     }
@@ -16,34 +18,10 @@ export const protect = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    console.log("✅ User authenticated:", req.user);
     next();
   } catch (error) {
+    console.log("❌ Token error:", error.message);
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
-};
-
-// ✅ Role-Based Access Control
-export const authorize = (roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ success: false, message: "Forbidden: Access denied" });
-    }
-    next();
-  };
-};
-
-// ✅ Special Check for Mentors (Only Approved Mentors Can Teach)
-export const mentorOnly = async (req, res, next) => {
-  if (req.user.role !== "mentor" || !req.user.isApproved) {
-    return res.status(403).json({ success: false, message: "Mentor access denied" });
-  }
-  next();
-};
-
-// ✅ Admin Access Only
-export const adminOnly = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ success: false, message: "Admin access denied" });
-  }
-  next();
 };

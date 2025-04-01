@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 
 export const mentorAuth = (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  const decoded = req.cookies.token || req.headers.authorization?.split(" ")[1];
   
   // Log the token for debugging
   console.log('Token received in authUser middleware:', token);
 
-  if (!token) {
+  if (!decoded) {
     return res.status(403).json({ success: false, message: 'Token missing' });
   }
 

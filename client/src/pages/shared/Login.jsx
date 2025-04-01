@@ -26,7 +26,7 @@ export const Login = ({ role ="user" }) => {
     user.role = "mentor";
     user.login_api = "/mentor/login";
     user.profile_route = "/mentor/profile";
-    user.home_route = "/mentor-home";  
+    user.home_route = "/mentor";  
     user.signup_route = "/mentor-signup";
   }
 
