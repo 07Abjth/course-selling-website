@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 
 export const mentorAuth = (req, res, next) => {
-  const decoded = req.cookies.token || req.headers.authorization?.split(" ")[1];
-  
-  // Log the token for debugging
-  console.log('Token received in authUser middleware:', token);
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-  if (!decoded) {
+  // Log the token for debugging
+  console.log('Token received in mentorAuth middleware:', token);
+
+  if (!token) {
     return res.status(403).json({ success: false, message: 'Token missing' });
   }
 
@@ -18,13 +18,13 @@ export const mentorAuth = (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid token' });
     }
 
- // Check if the user has the 'mentor' or 'admin' role
- if (decoded.role !== 'mentor' && decoded.role !== 'admin') {
-    return res.status(403).json({ success: false, message: 'Access denied, only mentors and admins can proceed' });
-  }
+    // Check if the user has the 'mentor' or 'admin' role
+    if (decoded.role !== 'mentor' && decoded.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Access denied, only mentors and admins can proceed' });
+    }
 
     // Log the decoded token
-    console.log('Decoded token in authUser middleware:', decoded);
+    console.log('Decoded token in mentorAuth middleware:', decoded);
 
     req.user = decoded;
     next();

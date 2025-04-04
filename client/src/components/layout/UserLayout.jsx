@@ -19,7 +19,7 @@ export const UserLayout = () => {
   // ✅ Async function to check user authentication
   const checkUser = async () => {
     try {
-      const response = await axiosInstance.get("/user/check-user/:id", {
+      const response = await axiosInstance.post("/user/check-user", {
         withCredentials: true, // ✅ Ensure cookies are sent
       });
       dispatch(saveUserData(response.data));

@@ -5,7 +5,7 @@ const courseSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
-    instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Instructor linked to User model
+    mentor: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" }, 
     image: { type: String },  
     category: { type: String, required: true },  
     level: { type: String, enum: ["Beginner", "Intermediate", "Advanced"], default: "Beginner" }, // Course difficulty level

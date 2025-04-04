@@ -24,7 +24,26 @@ const mentorSchema = new mongoose.Schema({
     enum: ['mentor', 'admin'],
     default: 'mentor',
   },
-});
+  bio: {
+    type: String,
+    required: false,
+  },
+  profilePic: {
+    type: String,
+    default: 'https://www.example.com/default-profile.png',
+  },
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
+  courses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Course',
+    },
+  ],
+}, { timestamps: true });
+
 
 const Mentor = mongoose.model('Mentor', mentorSchema);
 export default Mentor;

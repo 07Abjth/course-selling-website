@@ -17,7 +17,7 @@ export const MentorLayout = () => {
   // ✅ Check mentor authentication
 const checkMentor = async () => {
     try {
-      const response = await axiosInstance.get("/mentor/check-mentor", {
+      const response = await axiosInstance.post("/mentor/check-mentor", {
         withCredentials: true, // ✅ Ensure cookies are sent
       });
       dispatch(saveMentorData(response.data));

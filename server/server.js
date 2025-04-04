@@ -18,7 +18,7 @@ app.use(cookieParser()); // ✅ Enables cookie parsing
 // ✅ CORS Configuration
 app.use(cors({
   origin: "http://localhost:5173",
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"], // ✅ Fix methods format
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],  
   credentials: true,
 }));
 

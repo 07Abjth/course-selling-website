@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     password: { type: String, required: true },
     profilePic: { type: String, default: "https://www.example.com/default-profile.png" },
-    
+    purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }], // ✅ Reference to the Course model
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }], // ✅ Reference to the Course model
     // ✅ Role-Based Access
     role: { type: String, enum: ["user", "mentor", "admin"], default: "user" },
 
